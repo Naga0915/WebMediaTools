@@ -1,0 +1,39 @@
+﻿
+@{
+    ViewData["Title"] = "Downloader";
+}
+<h2>ふぉーむてすと</h2>
+
+<form id="form-get-info">
+    <label for="url">URL</label>
+    <input type="text" class="form-control" id="url" name="url" />
+    <button type="button" class="btn btn-primary" onclick="submitForm()">送信</button>
+</form>
+
+<div id="loading" style="display:none">Loading...</div>
+
+<div id="result"></div>
+
+@section scripts{
+    <script>
+        function submitForm(){
+            var formData = $("#form-get-info").serialize();
+            $("#loading").show();
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "Downloader/GetFormats",
+                    data: formData,
+                    success: function (response) {
+                        $("#loading").hide();
+                        $("#result").html(response);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                        $("#loading").hide();
+                    }
+                }
+            );
+        }
+    </script>
+}

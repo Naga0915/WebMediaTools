@@ -1,0 +1,68 @@
+﻿@using WebMediaTools.Models.Downloader;
+@using YoutubeDLSharp.Options;
+@model DownloadInfoModel
+
+<p>@Model.message</p>
+<div class="container border rounded">
+    <div class="row">
+        <div class="col-2">
+            Title
+        </div>
+        <div class="col-4">
+            Quality
+        </div>
+        <div class="col-4">
+            Options
+        </div>
+    </div>
+    @if (Model.entries != null)
+    {
+        foreach (var entry in Model.entries)
+        {
+            <div class="row border-top">
+                <div class="col-2">
+                    @entry.data.Title
+                </div>
+                <div class="col-4">
+                    <label for="selectVF">Video Quality</label>
+                    <select name="selectVF" id="selectVF" class="form-select" aria-label="select video format">
+                        @foreach (var format in entry.videoFormats)
+                        {
+                            <option value="@format.FormatId">@format.Format | @format.VideoBitrate.ToString()kbps(@format.VideoCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
+                        }
+                    </select>
+                    <label for="selectAF">Audio Quality</label>
+                    <select name="selectAF" id="selectAF" class="form-select" aria-label="select audio format">
+                        @foreach (var format in entry.audioFormats)
+                        {
+                            <option value="@format.FormatId">@format.Format | @format.AudioBitrate.ToString() kbps(@format.AudioCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
+                        }
+                    </select>
+                    <label for="selectBF">Both Quality</label>
+                    <select name="selectBF" id="selectBF" class="form-select" aria-label="select both format">
+                        @foreach (var format in entry.bothFormats)
+                        {
+                            <option value="@format.FormatId">@format.Format | @format.Bitrate.ToString() kbps(@format.VideoCodec)(@format.AudioCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label>Container</label>
+                    <select name="selectContainer" class="form-select select-container" aria-label="select container format">
+                        <option disabled>[Video]</option>
+                        @foreach (VideoRecodeFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
+                        {
+                            if (container == VideoRecodeFormat.None) continue;
+                            <option value="container">@Enum.GetName(typeof(AudioConversionFormat), container)</option>
+                        }
+                        <option disabled>[Audio]</option>
+                        @foreach (AudioConversionFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
+                        {
+                            <option value="container">@Enum.GetName(typeof(AudioConversionFormat), container)</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        }
+    }
+</div>
