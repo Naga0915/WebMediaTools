@@ -1,7 +1,11 @@
+using WebMediaTools.SharedServices;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+//shared dictionary for downloading
+builder.Services.AddSingleton<ISharedDictionaryService, SharedDictionaryService>();
 
 var app = builder.Build();
 

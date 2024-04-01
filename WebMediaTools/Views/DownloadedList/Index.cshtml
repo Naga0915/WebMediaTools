@@ -1,0 +1,22 @@
+﻿@{
+    ViewData["Title"] = "Downloaded File List";
+}
+@using WebMediaTools.Models.DownloadedList
+@model DownloadedListModel
+<h2>Downloaded File List</h2>
+<div class="container border rounded">
+    @foreach(var entry in Model.downloadedList)
+    {
+        <div class="row border-top">
+            <div class="col-2">
+                @entry.name
+            </div>
+            <div class="col-2">
+                @entry.size MB
+            </div>
+            <div class="col-2">
+                <a href="/Downloader/DownloadFile/@entry.guid">Download</a>
+            </div>
+        </div>
+    }
+</div>

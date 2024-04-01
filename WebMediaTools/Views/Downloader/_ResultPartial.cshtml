@@ -17,52 +17,75 @@
     </div>
     @if (Model.entries != null)
     {
+        int cnt = 0;
         foreach (var entry in Model.entries)
         {
-            <div class="row border-top">
-                <div class="col-2">
-                    @entry.data.Title
+            <form id="formDL-@cnt">
+                <input type="hidden" name="url" value="@entry.data.WebpageUrl" />
+                <input type="hidden" name="guid" value="@entry.guid" />
+                <div class="row border-top">
+                    <div class="col-2">
+                        @entry.data.Title
+                    </div>
+                    <div class="col-4">
+                        <label for="selectVF">Video Quality</label>
+                        <select name="selectVF" class="form-select" aria-label="select video format">
+                            @foreach (var format in entry.videoFormats)
+                            {
+                                <option value="@format.FormatId">@format.Format | @format.VideoBitrate.ToString()kbps(@format.VideoCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
+                            }
+                        </select>
+                        <label for="selectAF">Audio Quality</label>
+                        <select name="selectAF" class="form-select" aria-label="select audio format">
+                            @foreach (var format in entry.audioFormats)
+                            {
+                                <option value="@format.FormatId">@format.Format | @format.AudioBitrate.ToString() kbps(@format.AudioCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
+                            }
+                        </select>
+                        <label for="selectBF">Both Quality</label>
+                        <select name="selectBF" class="form-select" aria-label="select both format">
+                            @foreach (var format in entry.bothFormats)
+                            {
+                                <option value="@format.FormatId">@format.Format | @format.Bitrate.ToString() kbps(@format.VideoCodec)(@format.AudioCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-4">
+                        <label>Container</label>
+                        <select name="selectContainer" class="form-select select-container" aria-label="select container format">
+                            <option disabled>[Video]</option>
+                            @foreach (VideoRecodeFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
+                            {
+                                if (container == VideoRecodeFormat.None) continue;
+                                <option value="@Enum.GetName(typeof(VideoRecodeFormat), container)">@Enum.GetName(typeof(VideoRecodeFormat), container)</option>
+                            }
+                            <option disabled>[Audio]</option>
+                            @foreach (AudioConversionFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
+                            {
+                                <option value="@Enum.GetName(typeof(AudioConversionFormat), container)">@Enum.GetName(typeof(AudioConversionFormat), container)</option>
+                            }
+                        </select>
+                        <label>Progress</label>
+                        <div class="progress" role="progressbar" aria-valuenow="0" id="progress-@cnt" aria-valuemin="0" aria-valuemax="100">
+                            <div id="progress-bar-@cnt" class="progress-bar" style="width: 0%"></div>
+                        </div>
+                        <a id="downloadLink-@cnt" href="" download="" style="display:none">
+                            Download File
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5"></path>
+                                <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                    <div class="col-2">
+                        <label>Download Video and Audio</label>
+                        <button id="buttonDL-@cnt" type="button" class="btn btn-primary" onclick="submitDL(@cnt, 0)">Download</button>
+                        <label>Download Merged</label>
+                        <button id="buttonDLBoth-@cnt" type="button" class="btn btn-primary" onclick="submitDL(@cnt, 1)">Download</button>
+                    </div>
                 </div>
-                <div class="col-4">
-                    <label for="selectVF">Video Quality</label>
-                    <select name="selectVF" id="selectVF" class="form-select" aria-label="select video format">
-                        @foreach (var format in entry.videoFormats)
-                        {
-                            <option value="@format.FormatId">@format.Format | @format.VideoBitrate.ToString()kbps(@format.VideoCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
-                        }
-                    </select>
-                    <label for="selectAF">Audio Quality</label>
-                    <select name="selectAF" id="selectAF" class="form-select" aria-label="select audio format">
-                        @foreach (var format in entry.audioFormats)
-                        {
-                            <option value="@format.FormatId">@format.Format | @format.AudioBitrate.ToString() kbps(@format.AudioCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
-                        }
-                    </select>
-                    <label for="selectBF">Both Quality</label>
-                    <select name="selectBF" id="selectBF" class="form-select" aria-label="select both format">
-                        @foreach (var format in entry.bothFormats)
-                        {
-                            <option value="@format.FormatId">@format.Format | @format.Bitrate.ToString() kbps(@format.VideoCodec)(@format.AudioCodec) | @((format.FileSize / 1024 / 1024).ToString())Mb</option>
-                        }
-                    </select>
-                </div>
-                <div class="col-4">
-                    <label>Container</label>
-                    <select name="selectContainer" class="form-select select-container" aria-label="select container format">
-                        <option disabled>[Video]</option>
-                        @foreach (VideoRecodeFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
-                        {
-                            if (container == VideoRecodeFormat.None) continue;
-                            <option value="container">@Enum.GetName(typeof(AudioConversionFormat), container)</option>
-                        }
-                        <option disabled>[Audio]</option>
-                        @foreach (AudioConversionFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
-                        {
-                            <option value="container">@Enum.GetName(typeof(AudioConversionFormat), container)</option>
-                        }
-                    </select>
-                </div>
-            </div>
+            </form>
+            cnt++;
         }
     }
 </div>

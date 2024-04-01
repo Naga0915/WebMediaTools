@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Downloader";
 }
 <h2>ふぉーむてすと</h2>
@@ -16,7 +15,7 @@
 
 @section scripts{
     <script>
-        function submitForm(){
+        function submitForm() {
             var formData = $("#form-get-info").serialize();
             $("#loading").show();
             $.ajax(
@@ -34,6 +33,69 @@
                     }
                 }
             );
+        }
+        function submitDL(cnt, mode) {
+            let formData = $("#formDL-" + cnt);
+            let formatFinal = 'best';
+            if (mode == 0) {
+                if (formData.find("[name='selectVF']").val().toString() == '' && formData.find("[name='selectAF']").val().toString() == '') {
+                    formatFinal = 'best';
+                } else if (formData.find("[name='selectVF']").val().toString() != '' && formData.find("[name='selectAF']").val().toString() == '') {
+                    formatFinal = formData.get('selectVF').val().toString();
+                } else if (formData.find("[name='selectVF']").val().toString() == '' && formData.find("[name='selectAF']").val().toString() != '') {
+                    formatFinal = formData.find("[name='selectAF']").val().toString();
+                } else {
+                    formatFinal = formData.find("[name='selectVF']").val().toString() + '+' + formData.find("[name='selectAF']").val().toString();
+                }
+            } else if (mode == 1) {
+                formatFinal = formData.find("[name='selectBF']").val().toString()
+            }
+            var taskModel = {
+                url: formData.find("[name='url']").val().toString(),
+                format: formatFinal,
+                container: formData.find("[name='selectContainer']").val().toString(),
+                guid: formData.find("[name='guid']").val().toString()
+            }
+            $.ajax(
+                {
+                    type: "POST",
+                    url: "Downloader/Download",
+                    data: taskModel,
+                    beforeSend: function () {
+                        $("#buttonDL-" + cnt).hide();
+                        $("#buttonDLBoth-" + cnt).hide();
+                        setTimeout(updateProgressBar, 1000, cnt, formData.find("[name='guid']").val().toString());
+                    },
+                    success: function (response) {
+                        $("#buttonDL-" + cnt).show();
+                        $("#buttonDLBoth-" + cnt).show();
+                        $("#downloadLink-" + cnt).attr("href", response.url);
+                        $("#downloadLink-" + cnt).attr("style", "");
+                    },
+                    error: function (xhr, status, error) {
+                        console.error(xhr.responseText);
+                    }
+                }
+            );
+        }
+        function updateProgressBar(cnt, guid) {
+            fetch('/Downloader/GetProgress/' + cnt + '?guid=' + guid)
+                .then(response => response.text())
+                .then(data => {
+                    if (data >= 0) {
+                        var progress = parseFloat(data);
+                        let doc = document.getElementById('progress-' + cnt);
+                        doc.setAttribute('aria-valuenow', (progress * 100));
+                        let bar = document.getElementById('progress-bar-' + cnt);
+                        bar.setAttribute('style', "Width: " + (progress * 100) + "%");
+                        setTimeout(updateProgressBar, 1000, cnt, guid)
+                    } else {
+                        let doc = document.getElementById('progress-' + cnt);
+                        doc.setAttribute('aria-valuenow', (100));
+                        let bar = document.getElementById('progress-bar-' + cnt);
+                        bar.setAttribute('style', "Width: " + (100) + "%");
+                    }
+                });
         }
     </script>
 }
