@@ -35,5 +35,20 @@ namespace WebMediaTools.Controllers.Downloader
             model.downloadedList = list;
             return View(model);
         }
+
+        [Route("/DownloadedList/DeleteFile/{guid}")]
+        public IActionResult DeleteFile(string guid)
+        {
+            string path = _configuration["SaveDirectory"];
+            try
+            {
+                Directory.Delete(Path.Combine(path, guid), true);
+                return Redirect("/DownloadedList/Index");
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
