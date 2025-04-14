@@ -4,6 +4,7 @@
 @using WebMediaTools.Models.DownloadedList
 @model DownloadedListModel
 <h2>Downloaded File List</h2>
+<a href="DownloadedList/DeleteFileAll">Delete All</a>
 <div class="container border rounded">
     @foreach(var entry in Model.downloadedList)
     {

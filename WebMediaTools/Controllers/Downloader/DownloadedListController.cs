@@ -50,5 +50,22 @@ namespace WebMediaTools.Controllers.Downloader
                 return BadRequest(ex.Message);
             }
         }
+
+        public IActionResult DeleteFileAll()
+        {
+            string path = _configuration["SaveDirectory"];
+            try
+            {
+                foreach(string dir in Directory.GetDirectories(path))
+                {
+                    Directory.Delete(dir, true);
+                }
+                return Redirect("/DownloadedList/Index");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
