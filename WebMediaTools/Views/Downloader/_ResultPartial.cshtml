@@ -13,6 +13,21 @@
         </div>
         <div class="col-4">
             Options
+            <label>Container</label>
+            <select name="selectContainer" class="form-select" aria-label="select container format" id="select-container-all">
+                <option disabled>[Video]</option>
+                @foreach (VideoRecodeFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
+                {
+                    if (container == VideoRecodeFormat.None) continue;
+                    <option value="@Enum.GetName(typeof(VideoRecodeFormat), container)">@Enum.GetName(typeof(VideoRecodeFormat), container)</option>
+                }
+                <option disabled>[Audio]</option>
+                @foreach (AudioConversionFormat container in Enum.GetValues(typeof(AudioConversionFormat)))
+                {
+                    <option value="@Enum.GetName(typeof(AudioConversionFormat), container)">@Enum.GetName(typeof(AudioConversionFormat), container)</option>
+                }
+            </select>
+            <div class="btn-primary btn" onclick="selectAllContainer()">Set All Containers</div>
         </div>
     </div>
     @if (Model.entries != null)

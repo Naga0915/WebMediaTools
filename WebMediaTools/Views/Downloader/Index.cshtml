@@ -15,6 +15,9 @@
 
 @section scripts{
     <script>
+        function selectAllContainer() {
+            $(".select-container").val($("#select-container-all").val());
+        }
         function submitForm() {
             var formData = $("#form-get-info").serialize();
             $("#loading").show();
