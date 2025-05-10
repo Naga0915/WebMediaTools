@@ -1,0 +1,13 @@
+services:
+  wmt:
+    build: ./
+    image: webmediatools
+    ports:
+      # 必要に応じて以下の設定を変更する
+      # アプリのポート番号
+      # [ホスト側ポート]:80
+      - 80:80
+    volumes:
+      # 動画を保存するディレクトリ
+      # [動画を保存するホスト側のディレクトリ]:/mediabox
+      - C:\mediabox:/mediabox

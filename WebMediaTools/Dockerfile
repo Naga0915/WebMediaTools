@@ -3,16 +3,16 @@
 FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 80
-EXPOSE 443
+#EXPOSE 443
 #install python3
 RUN apt update && apt install -y python3
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["WebMediaTools/WebMediaTools.csproj", "WebMediaTools/"]
-RUN dotnet restore "WebMediaTools/WebMediaTools.csproj"
+COPY ["./WebMediaTools.csproj", "./"]
+RUN dotnet restore "./WebMediaTools.csproj"
 COPY . .
-WORKDIR "/src/WebMediaTools"
+WORKDIR "/src"
 RUN dotnet build "WebMediaTools.csproj" -c Release -o /app/build
 
 FROM build AS publish
